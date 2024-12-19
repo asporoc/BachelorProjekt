@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>SBK Records</title>
+</head>
+<body>
+<h1>SBK Records</h1>
+<table>
+    <tr>
+        <th>ID</th>
+        <th>Haushaltsnummer</th>
+        <th>Parent</th>
+        <th>Bewirtschafter</th>
+    </tr>
+    <tr th:each="sbk : ${sbks}">
+        <td th:text="${sbk.id}"></td>
+        <td th:text="${sbk.haushaltsnummer}"></td>
+        <td th:text="${sbk.parent != null} ? ${sbk.parent.id} : 'None'"></td>
+        <td th:text="${sbk.bewirtschafter.name}"></td>
+    </tr>
+</table>
+</body>
+</html>

@@ -1,0 +1,55 @@
+# Target and build directories
+/target/
+/build/
+
+# IDE-specific files
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea/
+*.iws
+*.iml
+*.ipr
+
+### Eclipse ###
+.classpath
+.project
+.settings/
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+### VS Code ###
+.vscode/
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+/logs/
+
+# Maven Wrapper
+/.mvn/
+mvnw
+mvnw.cmd
+
+# Sensitive configuration files
+application.properties
+application.yml
+
+HELP.md
+
+
