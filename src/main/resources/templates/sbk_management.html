@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>SBK Management Page</title>
+</head>
+<body>
+<h1>Manage SBKs</h1>
+
+<!-- Dropdown for selecting an SBK -->
+<form action="#" th:action="@{/manage-sbks}" th:object="${selectedSbk}" method="post">
+    <label for="bewirtschafter-select">Select Bewirtschafter:</label>
+    <select id="bewirtschafter-select" name="bewirtschafter.name" th:field="*{bewirtschafter.name}">
+        <option value="" disabled selected>-- Select Bewirtschafter --</option>
+        <option th:each="sbk : ${sbks}"
+                th:value="${sbk.bewirtschafter.name}"
+                th:text="${sbk.bewirtschafter.name}">Unnamed</option>
+    </select>
+    <button type="submit">Filter</button>
+</form>
+<div th:if="${error}" th:text="${error}" class="error"></div>
+
+<h2>SBK List</h2>
+<table border="1">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Haushaltsnummer</th>
+        <th>Parent ID</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="sbk : ${sbks}">
+        <td th:text="${sbk.id}"></td>
+        <td th:text="${sbk.haushaltsnummer}"></td>
+        <td th:text="${sbk.parent}"></td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

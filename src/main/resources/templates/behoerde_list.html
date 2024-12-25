@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Behoerde Records</title>
+</head>
+<body>
+<h1>Behoerde Records</h1>
+<table>
+    <tr>
+        <th>Name</th>
+    </tr>
+    <tr th:each="behoerde : ${behoerden}">
+        <td th:text="${behoerde.name}"></td>
+
+    </tr>
+</table>
+</body>
+</html>
