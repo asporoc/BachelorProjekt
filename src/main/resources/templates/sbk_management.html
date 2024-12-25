@@ -11,12 +11,13 @@
     <label for="bewirtschafter-select">Select Bewirtschafter:</label>
     <select id="bewirtschafter-select" name="bewirtschafter.name" th:field="*{bewirtschafter.name}">
         <option value="" disabled selected>-- Select Bewirtschafter --</option>
-        <option th:each="sbk : ${sbks}"
-                th:value="${sbk.bewirtschafter.name}"
-                th:text="${sbk.bewirtschafter.name}">Unnamed</option>
+        <option th:each="bew : ${bewirtschafterList}"
+                th:value="${bew.name}"
+                th:text="${bew.name}">Unnamed</option>
     </select>
     <button type="submit">Filter</button>
 </form>
+
 <div th:if="${error}" th:text="${error}" class="error"></div>
 
 <h2>SBK List</h2>
@@ -32,9 +33,10 @@
     <tr th:each="sbk : ${sbks}">
         <td th:text="${sbk.id}"></td>
         <td th:text="${sbk.haushaltsnummer}"></td>
-        <td th:text="${sbk.parent}"></td>
+        <td th:text="${sbk.parent == null ? 'No Parent' : sbk.parent.id}"></td>
     </tr>
     </tbody>
 </table>
 </body>
 </html>
+
