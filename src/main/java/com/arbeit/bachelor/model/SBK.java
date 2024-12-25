@@ -1,6 +1,8 @@
 package com.arbeit.bachelor.model;
 
 import jakarta.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class SBK {
@@ -17,7 +19,10 @@ public class SBK {
     @JoinColumn(name = "bewirtschafter")
     private Bewirtschafter bewirtschafter;
 
-    // Getters and Setters
+    @Transient // only in memory
+    private List<SBK> children = new ArrayList<>();
+
+
     public String getId() {
         return id;
     }
@@ -48,6 +53,14 @@ public class SBK {
 
     public void setBewirtschafter(Bewirtschafter bewirtschafter) {
         this.bewirtschafter = bewirtschafter;
+    }
+
+    public List<SBK> getChildren() {
+        return children;
+    }
+
+    public void setChildren(List<SBK> children) {
+        this.children = children;
     }
 }
 

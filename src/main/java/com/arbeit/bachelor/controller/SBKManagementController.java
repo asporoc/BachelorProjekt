@@ -46,7 +46,6 @@ public class SBKManagementController {
             return "sbk_management";
         }
 
-        // Filter SBKs based on the selected Bewirtschafter's name
         List<SBK> filteredSbks = sbkRepository.findByBewirtschafter_Name(
                 selectedSbk.getBewirtschafter().getName()
         );

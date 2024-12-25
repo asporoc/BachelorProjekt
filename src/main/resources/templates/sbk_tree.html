@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>SBK Tree</title>
+</head>
+<body>
+<h1>SBK Tree</h1>
+
+<ul>
+    <li th:each="sbk : ${tree}">
+        <span th:text="${sbk.id}"></span>
+        <ul th:if="${sbk.children}">
+            <li th:each="child : ${sbk.children}">
+                <span th:text="${child.id}"></span>
+            </li>
+        </ul>
+    </li>
+</ul>
+
+</body>
+</html>

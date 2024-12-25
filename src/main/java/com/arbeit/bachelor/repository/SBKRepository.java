@@ -7,5 +7,6 @@ import java.util.List;
 
 public interface SBKRepository extends JpaRepository<SBK, String> {
     List<SBK> findByBewirtschafter_Name(String bewirtschafterName);
+    List<SBK> findAll();
 }
 
