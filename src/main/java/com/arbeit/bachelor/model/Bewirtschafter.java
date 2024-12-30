@@ -3,6 +3,8 @@ package com.arbeit.bachelor.model;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 public class Bewirtschafter {
     @Id
@@ -32,6 +34,14 @@ public class Bewirtschafter {
         this.organisationseinheit = organisationseinheit;
     }
 
+    public List<TreeNode> getSbks() {
+        return sbks;
+    }
+
+    public void setSbks(List<TreeNode> sbks) {
+        this.sbks = sbks;
+    }
+
     public Behoerde getBehoerde() {
         return behoerde;
     }
@@ -39,5 +49,7 @@ public class Bewirtschafter {
     public void setBehoerde(Behoerde behoerde) {
         this.behoerde = behoerde;
     }
+    @Transient
+    private List<TreeNode> sbks;
 }
 

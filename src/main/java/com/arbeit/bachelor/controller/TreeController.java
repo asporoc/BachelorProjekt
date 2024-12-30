@@ -23,6 +23,7 @@ public class TreeController {
     @GetMapping
     public String showTree(Model model) {
         List<TreeNode> tree = sbkService.buildTreeStructure();
+        sbkService.fillLists(tree);
         model.addAttribute("tree", tree);
         return "sbk_tree";
     }

@@ -8,14 +8,22 @@
 
 <ul>
     <li th:each="sbk : ${tree}">
-        <span th:text="${sbk.id}"></span>
-        <ul th:if="${sbk.children}">
-            <li th:each="child : ${sbk.children}">
-                <span th:text="${child.id}"></span>
-            </li>
+        <span th:text="${sbk.getData().id}"></span>
+        <!-- Recursive children rendering -->
+        <ul th:if="${sbk.children.size() > 0}">
+            <li th:each="child : ${sbk.children}" th:insert="this ::subtree"></li>
         </ul>
     </li>
 </ul>
 
+<!-- Recursive template fragment -->
+<div th:fragment="subtree">
+    <span th:text="${child.data.id}"></span>
+    <ul th:if="${child.children.size() > 0}">
+        <li th:each="child : ${child.children}" th:insert="this ::subtree"></li>
+    </ul>
+</div>
+
 </body>
 </html>
+
