@@ -100,6 +100,7 @@ public class SBKService {
         for(TreeNode node : list){
             if(node.getData().getBewirtschafter().getName().equals(bewirtschafter.getName())){
                 bewirtschafter.getSbks().add(node);
+                node.getData().setBewirtschafter(bewirtschafter);
                 System.out.println("help");
             }
             if(node.getChildren()!=null){
