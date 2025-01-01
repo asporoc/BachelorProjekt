@@ -88,7 +88,10 @@ public class SBKService {
         for (Behoerde behoerde : allBehoerde){
             behoerde.setBewirtschafter(fillBewirtschafterListsBehoerde(behoerde));
         }
-        //fill Behoerde Lists method
+        for (Behoerde behoerde : allBehoerde){
+            behoerde.setOrganisationseinheiten(fillOrgaListsBehoerde(behoerde));
+        }
+
     }
     private void fillSBKLists(Bewirtschafter bewirtschafter, List<TreeNode> treeNodes){
             upwardTreeTraversal(treeNodes,bewirtschafter);
@@ -106,16 +109,7 @@ public class SBKService {
         }
     }
     private List<Bewirtschafter> fillBewirtschafterListsOrga(Organisationseinheit organisationseinheit){
-        int counter=0;
-
-        for (Bewirtschafter bewirtschafter : allBewirtschafter){
-            if(bewirtschafter.getOrganisationseinheit()!=null) {
-                if (bewirtschafter.getOrganisationseinheit().getName().equals(organisationseinheit.getName())) {
-                    counter++;
-                }
-            }
-        }
-        List<Bewirtschafter> list = new ArrayList<>(counter);
+        List<Bewirtschafter> list = new ArrayList<>();
         for (Bewirtschafter bewirtschafter : allBewirtschafter){
             if(bewirtschafter.getOrganisationseinheit()!=null) {
                 if (bewirtschafter.getOrganisationseinheit().getName().equals(organisationseinheit.getName())) {
@@ -127,19 +121,23 @@ public class SBKService {
     }
 
     private List<Bewirtschafter> fillBewirtschafterListsBehoerde(Behoerde behoerde){
-        int counter=0;
-        for (Bewirtschafter bewirtschafter : allBewirtschafter){
-            if(bewirtschafter.getBehoerde()!=null) {
-                if (bewirtschafter.getBehoerde().getName().equals(behoerde.getName())) {
-                    counter++;
-                }
-            }
-        }
-        List<Bewirtschafter> list = new ArrayList<>(counter);
+        List<Bewirtschafter> list = new ArrayList<>();
         for (Bewirtschafter bewirtschafter : allBewirtschafter){
             if(bewirtschafter.getBehoerde()!=null) {
                 if (bewirtschafter.getBehoerde().getName().equals(behoerde.getName())) {
                     list.add(bewirtschafter);
+                }
+            }
+        }
+        return list;
+    }
+
+    private List<Organisationseinheit> fillOrgaListsBehoerde(Behoerde behoerde){
+        List<Organisationseinheit> list = new ArrayList<>();
+        for (Organisationseinheit organisationseinheit : allOrganisationseinheit){
+            if(organisationseinheit.getBehoerde()!=null) {
+                if (organisationseinheit.getBehoerde().getName().equals(behoerde.getName())) {
+                    list.add(organisationseinheit);
                 }
             }
         }
