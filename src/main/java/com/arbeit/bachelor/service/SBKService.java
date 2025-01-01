@@ -1,9 +1,6 @@
 package com.arbeit.bachelor.service;
 
-import com.arbeit.bachelor.model.Bewirtschafter;
-import com.arbeit.bachelor.model.Organisationseinheit;
-import com.arbeit.bachelor.model.SBK;
-import com.arbeit.bachelor.model.TreeNode;
+import com.arbeit.bachelor.model.*;
 import com.arbeit.bachelor.repository.BehoerdeRepository;
 import com.arbeit.bachelor.repository.BewirtschafterRepository;
 import com.arbeit.bachelor.repository.OrganisationseinheitRepository;
@@ -22,6 +19,7 @@ public class SBKService {
     private List<SBK> allSbks;
     private List<Bewirtschafter> allBewirtschafter;
     private List<Organisationseinheit> allOrganisationseinheit;
+    private List<Behoerde> allBehoerde;
 
 
     public SBKService(SBKRepository sbkRepository, BewirtschafterRepository bewirtschafterRepository, OrganisationseinheitRepository organisationseinheitRepository, BehoerdeRepository behoerdeRepository) {
@@ -33,6 +31,7 @@ public class SBKService {
         allSbks = sbkRepository.findAll();
         allBewirtschafter = bewirtschafterRepository.findAll();
         allOrganisationseinheit = organisationseinheitRepository.findAll();
+        allBehoerde = behoerdeRepository.findAll();
     }
 
     public List<TreeNode> buildTreeStructure() {
@@ -86,25 +85,13 @@ public class SBKService {
         for (Organisationseinheit organisationseinheit : allOrganisationseinheit){
             organisationseinheit.setBewirtschafter(fillBewirtschafterListsOrga(organisationseinheit));
         }
+        for (Behoerde behoerde : allBehoerde){
+            behoerde.setBewirtschafter(fillBewirtschafterListsBehoerde(behoerde));
+        }
         //fill Behoerde Lists method
     }
     private void fillSBKLists(Bewirtschafter bewirtschafter, List<TreeNode> treeNodes){
-/*** need to FIX this so that each Node is traversed***/
-
             upwardTreeTraversal(treeNodes,bewirtschafter);
-
-        /*
-        for (SBK sbk : allSbks) {
-            if(sbk.getBewirtschafter().getName().equals(bewirtschafter.getName())){
-                counter++;
-            }
-        }
-        List<SBK> list = new ArrayList<>(counter);
-        for (SBK sbk : allSbks) {
-            if(sbk.getBewirtschafter().getName().equals(bewirtschafter.getName())){
-                list.add(sbk);
-            }
-        }*/
     }
     private void upwardTreeTraversal(List<TreeNode> list, Bewirtschafter bewirtschafter){
         for(TreeNode node : list){
@@ -138,9 +125,26 @@ public class SBKService {
         }
         return list;
     }
-    // STILL NEED TO COUPLE THESE TO THE TREE, RIGHT NOW IT ONLY REFERENCES INSTANCES NEED COUPLING TO TREE NODES
 
-
+    private List<Bewirtschafter> fillBewirtschafterListsBehoerde(Behoerde behoerde){
+        int counter=0;
+        for (Bewirtschafter bewirtschafter : allBewirtschafter){
+            if(bewirtschafter.getBehoerde()!=null) {
+                if (bewirtschafter.getBehoerde().getName().equals(behoerde.getName())) {
+                    counter++;
+                }
+            }
+        }
+        List<Bewirtschafter> list = new ArrayList<>(counter);
+        for (Bewirtschafter bewirtschafter : allBewirtschafter){
+            if(bewirtschafter.getBehoerde()!=null) {
+                if (bewirtschafter.getBehoerde().getName().equals(behoerde.getName())) {
+                    list.add(bewirtschafter);
+                }
+            }
+        }
+        return list;
+    }
 }
 
 

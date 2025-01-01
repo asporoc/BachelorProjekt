@@ -22,6 +22,22 @@ public class Behoerde {
     @OneToMany(mappedBy = "behoerde")
     private List<Organisationseinheit> organisationseinheiten;
 
+    public List<Organisationseinheit> getOrganisationseinheiten() {
+        return organisationseinheiten;
+    }
+
+    public void setOrganisationseinheiten(List<Organisationseinheit> organisationseinheiten) {
+        this.organisationseinheiten = organisationseinheiten;
+    }
+
+    public List<Bewirtschafter> getBewirtschafter() {
+        return bewirtschafter;
+    }
+
+    public void setBewirtschafter(List<Bewirtschafter> bewirtschafter) {
+        this.bewirtschafter = bewirtschafter;
+    }
+
     @OneToMany(mappedBy = "behoerde")
     private List<Bewirtschafter> bewirtschafter;
 }
