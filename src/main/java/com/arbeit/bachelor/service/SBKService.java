@@ -79,26 +79,20 @@ public class SBKService {
 
     public void fillLists(List<TreeNode> treeNodes){
         for(Bewirtschafter bewirtschafter : allBewirtschafter){
-            bewirtschafter.setSbks(fillSBKLists(bewirtschafter, treeNodes));
+            List<TreeNode> list = new ArrayList<>();
+            bewirtschafter.setSbks(list);
+            fillSBKLists(bewirtschafter, treeNodes);
         }
         for (Organisationseinheit organisationseinheit : allOrganisationseinheit){
             organisationseinheit.setBewirtschafter(fillBewirtschafterListsOrga(organisationseinheit));
         }
         //fill Behoerde Lists method
     }
-    private List<TreeNode> fillSBKLists(Bewirtschafter bewirtschafter, List<TreeNode> treeNodes){
+    private void fillSBKLists(Bewirtschafter bewirtschafter, List<TreeNode> treeNodes){
 /*** need to FIX this so that each Node is traversed***/
-        List<TreeNode> list = new ArrayList<>();
-        TreeNode currentNode;
-        List<TreeNode> children =new ArrayList<>();
-        for(TreeNode treeNode : treeNodes){
-            children = treeNode.getChildren();
-            for(TreeNode child : children){
-                if (child.getData().getBewirtschafter().getName().equals(bewirtschafter.getName())) {
-                    list.add(child);
-                }
-            }
-        }
+
+            upwardTreeTraversal(treeNodes,bewirtschafter);
+
         /*
         for (SBK sbk : allSbks) {
             if(sbk.getBewirtschafter().getName().equals(bewirtschafter.getName())){
@@ -111,7 +105,18 @@ public class SBKService {
                 list.add(sbk);
             }
         }*/
-        return list;
+    }
+    private void upwardTreeTraversal(List<TreeNode> list, Bewirtschafter bewirtschafter){
+        for(TreeNode node : list){
+            if(node.getData().getBewirtschafter().getName().equals(bewirtschafter.getName())){
+                bewirtschafter.getSbks().add(node);
+                System.out.println("help");
+            }
+            if(node.getChildren()!=null){
+                upwardTreeTraversal(node.getChildren(),bewirtschafter);
+            }
+
+        }
     }
     private List<Bewirtschafter> fillBewirtschafterListsOrga(Organisationseinheit organisationseinheit){
         int counter=0;
