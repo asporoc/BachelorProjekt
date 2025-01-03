@@ -62,6 +62,8 @@ public class SBKService {
             if (sbk.getParent() != null) {
                 TreeNode parentNode = nodeMap.get(sbk.getParent().getId());
                 parentNode.addChild(currentNode);
+                currentNode.setParent(parentNode);
+
             } else {
                 rootNodes.add(currentNode);
             }
@@ -100,7 +102,7 @@ public class SBKService {
         for(TreeNode node : list){
             if(node.getData().getBewirtschafter().getName().equals(bewirtschafter.getName())){
                 bewirtschafter.getSbks().add(node);
-                node.getData().setBewirtschafter(bewirtschafter);
+                node.getData().setBewirtschafter(bewirtschafter); // update node Bewirtschafter so that the Bewirtschafter in the node is the same as the one that holds the node in its sbks list
                 System.out.println("help");
             }
             if(node.getChildren()!=null){
