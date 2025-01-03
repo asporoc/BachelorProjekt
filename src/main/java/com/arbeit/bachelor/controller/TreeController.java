@@ -24,6 +24,7 @@ public class TreeController {
     public String showTree(Model model) {
         List<TreeNode> tree = sbkService.buildTreeStructure();
         sbkService.fillLists(tree);
+        sbkService.fillAnwenderFields(sbkService.allAnwender);
         model.addAttribute("tree", tree);
         return "sbk_tree";
     }

@@ -1,10 +1,7 @@
 package com.arbeit.bachelor.service;
 
 import com.arbeit.bachelor.model.*;
-import com.arbeit.bachelor.repository.BehoerdeRepository;
-import com.arbeit.bachelor.repository.BewirtschafterRepository;
-import com.arbeit.bachelor.repository.OrganisationseinheitRepository;
-import com.arbeit.bachelor.repository.SBKRepository;
+import com.arbeit.bachelor.repository.*;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -16,22 +13,27 @@ public class SBKService {
     private final BewirtschafterRepository bewirtschafterRepository;
     private final OrganisationseinheitRepository organisationseinheitRepository;
     private final BehoerdeRepository behoerdeRepository;
+    private final AnwenderRepository anwenderRepository;
     private List<SBK> allSbks;
     private List<Bewirtschafter> allBewirtschafter;
     private List<Organisationseinheit> allOrganisationseinheit;
     private List<Behoerde> allBehoerde;
+    public List<Anwender> allAnwender;
 
 
-    public SBKService(SBKRepository sbkRepository, BewirtschafterRepository bewirtschafterRepository, OrganisationseinheitRepository organisationseinheitRepository, BehoerdeRepository behoerdeRepository) {
+    public SBKService(SBKRepository sbkRepository, BewirtschafterRepository bewirtschafterRepository, OrganisationseinheitRepository organisationseinheitRepository, BehoerdeRepository behoerdeRepository, AnwenderRepository anwenderRepository) {
         this.sbkRepository = sbkRepository;
         this.bewirtschafterRepository = bewirtschafterRepository;
         this.organisationseinheitRepository = organisationseinheitRepository;
         this.behoerdeRepository = behoerdeRepository;
+        this.anwenderRepository = anwenderRepository;
 
         allSbks = sbkRepository.findAll();
         allBewirtschafter = bewirtschafterRepository.findAll();
         allOrganisationseinheit = organisationseinheitRepository.findAll();
         allBehoerde = behoerdeRepository.findAll();
+        allAnwender = anwenderRepository.findAll();
+
     }
 
     public List<TreeNode> buildTreeStructure() {
@@ -53,6 +55,11 @@ public class SBKService {
             nodeMap.put(sbk.getId(), new TreeNode(sbk));
         }
         return nodeMap;
+    }
+    public void fillAnwenderFields(List<Anwender> anwenderList) {
+        for (Anwender anwender : anwenderList) {
+            linkAnwender(anwender);
+        }
     }
 
     private List<TreeNode> buildParentChildReferences(List<SBK> allSbks, Map<String, TreeNode> nodeMap) {
@@ -145,6 +152,42 @@ public class SBKService {
             }
         }
         return list;
+    }
+    public void linkAnwender(Anwender anwender) {
+        if(anwender.getBewirtschafter() != null) {
+            for (Bewirtschafter bewirtschafter : allBewirtschafter) {
+                if (bewirtschafter.getName().equals(anwender.getBewirtschafter().getName())) {
+                    anwender.setBewirtschafter(bewirtschafter);
+                    break;
+                }
+            }
+        }
+        if(anwender.getOrganisationseinheit() != null) {
+            for (Organisationseinheit orga : allOrganisationseinheit) {
+                if (orga.getName().equals(anwender.getOrganisationseinheit().getName())) {
+                    anwender.setOrganisationseinheit(orga);
+                    break;
+                }
+            }
+        }
+
+        for (Behoerde behoerde : allBehoerde) {
+            if (behoerde.getName().equals(anwender.getBehoerde().getName())) {
+                anwender.setBehoerde(behoerde);
+                break;
+            }
+        }
+    }
+
+    public Map<TreeNode,Permissions> generateBfdHACL(Anwender anwender){
+    return null;
+    }
+    public Map<TreeNode,Permissions> generateAoBACL(Anwender anwender){
+        Bewirtschafter bewirtschafter = anwender.getBewirtschafter();
+        return null;
+    }
+    public Map<TreeNode,Permissions> generateAnweisendeACL(Anwender anwender){
+        return null;
     }
 }
 
