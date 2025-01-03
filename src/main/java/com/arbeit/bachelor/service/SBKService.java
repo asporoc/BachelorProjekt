@@ -9,11 +9,11 @@ import java.util.*;
 @Service
 public class SBKService {
 
-    private final SBKRepository sbkRepository;
-    private final BewirtschafterRepository bewirtschafterRepository;
-    private final OrganisationseinheitRepository organisationseinheitRepository;
-    private final BehoerdeRepository behoerdeRepository;
-    private final AnwenderRepository anwenderRepository;
+    private SBKRepository sbkRepository;
+    private BewirtschafterRepository bewirtschafterRepository;
+    private OrganisationseinheitRepository organisationseinheitRepository;
+    private BehoerdeRepository behoerdeRepository;
+    private AnwenderRepository anwenderRepository;
     private List<SBK> allSbks;
     private List<Bewirtschafter> allBewirtschafter;
     private List<Organisationseinheit> allOrganisationseinheit;
@@ -42,9 +42,6 @@ public class SBKService {
 
         List<TreeNode> rootNodes = buildParentChildReferences(allSbks, nodeMap);
 
-        for (TreeNode node : rootNodes) {
-            printTree(node, 6);
-        }
 
         return rootNodes;
     }
@@ -103,17 +100,16 @@ public class SBKService {
 
     }
     private void fillSBKLists(Bewirtschafter bewirtschafter, List<TreeNode> treeNodes){
-            upwardTreeTraversal(treeNodes,bewirtschafter);
+            DownwardTreeTraversal(treeNodes,bewirtschafter);
     }
-    private void upwardTreeTraversal(List<TreeNode> list, Bewirtschafter bewirtschafter){
+    private void DownwardTreeTraversal(List<TreeNode> list, Bewirtschafter bewirtschafter){
         for(TreeNode node : list){
             if(node.getData().getBewirtschafter().getName().equals(bewirtschafter.getName())){
                 bewirtschafter.getSbks().add(node);
                 node.getData().setBewirtschafter(bewirtschafter); // update node Bewirtschafter so that the Bewirtschafter in the node is the same as the one that holds the node in its sbks list
-                System.out.println("help");
             }
             if(node.getChildren()!=null){
-                upwardTreeTraversal(node.getChildren(),bewirtschafter);
+                DownwardTreeTraversal(node.getChildren(),bewirtschafter);
             }
 
         }
@@ -186,8 +182,39 @@ public class SBKService {
         Bewirtschafter bewirtschafter = anwender.getBewirtschafter();
         return null;
     }
-    public Map<TreeNode,Permissions> generateAnweisendeACL(Anwender anwender){
-        return null;
+    public void downTree(List<TreeNode> nodes, Map<SBK,Permissions> acl){
+        for(TreeNode node : nodes){
+            acl.put(node.getData(), Permissions.L);
+            if(node.getChildren() != null){
+                downTree(node.getChildren(),acl);
+            }
+        }
+    }
+    public void upTree(TreeNode node, Map<SBK,Permissions> acl){
+            acl.put(node.getData(), Permissions.L);
+            if(node.getParent() != null){
+                upTree(node.getParent(),acl);
+            }
+        }
+
+    public Map<SBK,Permissions> generateAnweisendeACL(Anwender anwender){
+        Map<SBK,Permissions> acl = new HashMap<>();
+        List<TreeNode> bList = anwender.getBewirtschafter().getSbks();
+        for(TreeNode node : bList){
+            acl.put(node.getData(),Permissions.B);
+            if(node.getChildren() != null) {
+                downTree(node.getChildren(), acl);
+            }
+            if(node.getParent() != null) {
+                upTree(node.getParent(),acl);
+            }
+        }
+        return acl;
+    }
+    public void printAclMap(Map<SBK, Permissions> acl) {
+        for (Map.Entry<SBK, Permissions> entry : acl.entrySet()) {
+            System.out.println(entry.getKey().getId() + " => "+ entry.getValue().toString());
+        }
     }
 }
 

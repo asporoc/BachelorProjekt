@@ -1,6 +1,8 @@
 package com.arbeit.bachelor.controller;
 
 
+import com.arbeit.bachelor.model.Permissions;
+import com.arbeit.bachelor.model.SBK;
 import com.arbeit.bachelor.model.TreeNode;
 import com.arbeit.bachelor.service.SBKService;
 import org.springframework.stereotype.Controller;
@@ -9,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/tree")
@@ -25,6 +28,8 @@ public class TreeController {
         List<TreeNode> tree = sbkService.buildTreeStructure();
         sbkService.fillLists(tree);
         sbkService.fillAnwenderFields(sbkService.allAnwender);
+        Map<SBK, Permissions> test = sbkService.generateAnweisendeACL(sbkService.allAnwender.get(3));
+        sbkService.printAclMap(test);
         model.addAttribute("tree", tree);
         return "sbk_tree";
     }
