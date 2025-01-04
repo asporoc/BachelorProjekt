@@ -1,29 +1,67 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>SBK Tree</title>
+    <title>SBK Tree and Anwender ACL Viewer</title>
+    <script
+            src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js"
+            integrity="sha512-oJHaCz3aNO9XBOhmE5ReC5JLfCSscLA/eZUEonY8DO1UP1nErXicHsEiKmtFbTUmuu1hgQ5UnjfvEIBnreOl7A=="
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer"
+    ></script>
 </head>
 <body>
 <h1>SBK Tree</h1>
 
-<ul>
-    <li th:each="sbk : ${tree}">
-        <span th:text="${sbk.getData().id}"></span>
-        <!-- Recursive children rendering -->
-        <ul th:if="${sbk.children.size() > 0}">
-            <li th:each="child : ${sbk.children}" th:insert="this ::subtree"></li>
-        </ul>
-    </li>
-</ul>
+<label for="anwenderSelect">Choose Anwender:</label>
+<select id="anwenderSelect" onchange="loadAcl()">
+    <option value="" selected disabled>-- Select Anwender --</option>
+    <option th:each="anwender : ${anwenderList}"
+            th:value="${anwender.bezeichnung}"
+            th:text="${anwender.bezeichnung}"></option>
+</select>
 
-<!-- Recursive template fragment -->
-<div th:fragment="subtree">
-    <span th:text="${child.data.id}"></span>
-    <ul th:if="${child.children.size() > 0}">
-        <li th:each="child : ${child.children}" th:insert="this ::subtree"></li>
-    </ul>
+
+<!-- ACL Display -->
+<div id="aclDisplay">
+    <h2>ACL for Anwender:</h2>
+    <table>
+        <thead>
+        <tr>
+            <th>SBK</th>
+            <th>Permissions</th>
+        </tr>
+        </thead>
+        <tbody id="aclTableBody"></tbody>
+    </table>
 </div>
 
+
+
+<!-- JS to Fetch and Render ACL -->
+<script>
+    function loadAcl() {
+        const selectedAnwender = document.getElementById("anwenderSelect").value;
+        if (!selectedAnwender) return;
+
+        fetch(`/acl/${selectedAnwender}`)
+            .then((response) => response.json())
+            .then((data) => {
+                const aclTableBody = document.getElementById("aclTableBody");
+                aclTableBody.innerHTML = "";
+
+                // Populate table with ACL
+                for (const [sbk, permission] of Object.entries(data)) {
+                    const row = document.createElement("tr");
+                    row.innerHTML = `
+                            <td>${sbk}</td>
+                            <td>${permission}</td>
+                        `;
+                    aclTableBody.appendChild(row);
+                }
+            })
+            .catch((err) => console.error("Error fetching ACL:", err));
+    }
+</script>
 </body>
 </html>
 

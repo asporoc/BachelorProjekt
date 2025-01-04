@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>SBK Management</title>
+</head>
+<body>
+<h1>SBK Management</h1>
+
+
+
+<!-- Displaying filtered SBKs in a table -->
+<h2>SBK List</h2>
+<table border="1">
+  <thead>
+  <tr>
+    <th>ID</th>
+    <th>Haushaltsnummer</th>
+    <th>Parent ID</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr th:each="sbk : ${sbks}">
+    <td th:text="${sbk.id}"></td>
+    <td th:text="${sbk.haushaltsnummer}"></td>
+    <td th:text="${sbk.parent?.id}"></td>
+  </tr>
+  </tbody>
+</table>
+</body>
+</html>

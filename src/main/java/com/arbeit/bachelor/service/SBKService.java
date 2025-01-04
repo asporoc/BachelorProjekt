@@ -204,13 +204,12 @@ public class SBKService {
                 upTree(node.getParent(),acl);
             }
         }
-
         return acl;
     }
 
     public void downTree(List<TreeNode> nodes, Map<SBK,Permissions> acl, List <TreeNode> bList){
         for(TreeNode node : nodes){
-            if(!bList.contains(node.getParent())) { //check if parent is in the List of the Buchungs SBKs, as acl entries were overwritten.
+            if(!bList.contains(node)) { //check if parent is in the List of the Buchungs SBKs, as acl entries were overwritten. // STILL PROBLEMATIC
                 acl.put(node.getData(), Permissions.L);
             }
             if(node.getChildren() != null){
