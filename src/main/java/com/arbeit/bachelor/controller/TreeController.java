@@ -28,7 +28,7 @@ public class TreeController {
         List<TreeNode> tree = sbkService.buildTreeStructure();
         sbkService.fillLists(tree);
         sbkService.fillAnwenderFields(sbkService.allAnwender);
-        Map<SBK, Permissions> test = sbkService.generateAnweisendeACL(sbkService.allAnwender.get(3));
+        Map<SBK, Permissions> test = sbkService.generateAnweisendeAndAoBACL(sbkService.allAnwender.get(7));
         sbkService.printAclMap(test);
         model.addAttribute("tree", tree);
         return "sbk_tree";

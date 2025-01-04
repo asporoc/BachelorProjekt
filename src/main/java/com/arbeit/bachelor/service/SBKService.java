@@ -175,18 +175,46 @@ public class SBKService {
         }
     }
 
-    public Map<TreeNode,Permissions> generateBfdHACL(Anwender anwender){
-    return null;
+    public Map<SBK,Permissions> generateBfdHACL(Anwender anwender){
+        Map<SBK,Permissions> acl = new HashMap<>();
+        List<TreeNode> bList = new ArrayList<>();
+        if (anwender.getBehoerde().getOrganisationseinheiten().size()>0 && anwender.getBehoerde().getOrganisationseinheiten() != null ) {
+            for (Organisationseinheit orga : anwender.getBehoerde().getOrganisationseinheiten()) {
+                for (Bewirtschafter bewirtschafter : orga.getBewirtschafter()) {
+                    bList.addAll(bewirtschafter.getSbks());
+                }
+            }
+        }else{
+            for (Bewirtschafter bewirtschafter : anwender.getBehoerde().getBewirtschafter()) {
+                bList.addAll(bewirtschafter.getSbks());
+            }
+
+        }
+        return getSbkPermissionsMap(acl, bList);
+
     }
-    public Map<TreeNode,Permissions> generateAoBACL(Anwender anwender){
-        Bewirtschafter bewirtschafter = anwender.getBewirtschafter();
-        return null;
+
+    private Map<SBK, Permissions> getSbkPermissionsMap(Map<SBK, Permissions> acl, List<TreeNode> bList) {
+        for(TreeNode node : bList){
+            acl.put(node.getData(),Permissions.B);
+            if(node.getChildren() != null ) {
+                downTree(node.getChildren(), acl, bList);
+            }
+            if(node.getParent() != null) {
+                upTree(node.getParent(),acl);
+            }
+        }
+
+        return acl;
     }
-    public void downTree(List<TreeNode> nodes, Map<SBK,Permissions> acl){
+
+    public void downTree(List<TreeNode> nodes, Map<SBK,Permissions> acl, List <TreeNode> bList){
         for(TreeNode node : nodes){
-            acl.put(node.getData(), Permissions.L);
+            if(!bList.contains(node.getParent())) { //check if parent is in the List of the Buchungs SBKs, as acl entries were overwritten.
+                acl.put(node.getData(), Permissions.L);
+            }
             if(node.getChildren() != null){
-                downTree(node.getChildren(),acl);
+                downTree(node.getChildren(),acl, bList);
             }
         }
     }
@@ -197,22 +225,15 @@ public class SBKService {
             }
         }
 
-    public Map<SBK,Permissions> generateAnweisendeACL(Anwender anwender){
+    public Map<SBK,Permissions> generateAnweisendeAndAoBACL(Anwender anwender){
         Map<SBK,Permissions> acl = new HashMap<>();
         List<TreeNode> bList = anwender.getBewirtschafter().getSbks();
-        for(TreeNode node : bList){
-            acl.put(node.getData(),Permissions.B);
-            if(node.getChildren() != null) {
-                downTree(node.getChildren(), acl);
-            }
-            if(node.getParent() != null) {
-                upTree(node.getParent(),acl);
-            }
-        }
-        return acl;
+        return getSbkPermissionsMap(acl, bList);
     }
+
     public void printAclMap(Map<SBK, Permissions> acl) {
         for (Map.Entry<SBK, Permissions> entry : acl.entrySet()) {
+            if(entry.getValue().equals(Permissions.B))
             System.out.println(entry.getKey().getId() + " => "+ entry.getValue().toString());
         }
     }
