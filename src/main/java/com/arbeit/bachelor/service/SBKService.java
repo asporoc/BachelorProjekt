@@ -201,7 +201,7 @@ public class SBKService {
                 downTree(node.getChildren(), acl, bList);
             }
             if(node.getParent() != null) {
-                upTree(node.getParent(),acl);
+                upTree(node.getParent(),acl, bList);
             }
         }
         return acl;
@@ -217,10 +217,12 @@ public class SBKService {
             }
         }
     }
-    public void upTree(TreeNode node, Map<SBK,Permissions> acl){
+    public void upTree(TreeNode node, Map<SBK,Permissions> acl, List<TreeNode> bList){
+        if(!bList.contains(node)){
             acl.put(node.getData(), Permissions.L);
-            if(node.getParent() != null){
-                upTree(node.getParent(),acl);
+        }
+        if(node.getParent() != null){
+                upTree(node.getParent(),acl, bList);
             }
         }
 
