@@ -28,7 +28,6 @@ public class SBKController {
         sbkService.fillAnwenderFields(sbkService.allAnwender);
     }
 
-    // Existing method for SBK list
     @GetMapping("/sbk")
     public String showSBKs(Model model) {
         List<SBK> sbks = sbkRepository.findAll();
@@ -36,14 +35,13 @@ public class SBKController {
         return "sbk_list";
     }
 
-    // New method for SBK Tree and Anwender ACL View
     @GetMapping("/")
     public String showSBKTreeAndAnwenderAcl(Model model) {
         model.addAttribute("anwenderList", sbkService.allAnwender); // Anwender list for dropdown
         return "sbk_tree";
     }
 
-    // API endpoint to return ACL Map for selected Anwender
+    //return ACL Map for selected Anwender
     @GetMapping("/acl/{anwender}")
     @ResponseBody
     public Map<String, String> getAclForAnwender(@PathVariable String anwender) {

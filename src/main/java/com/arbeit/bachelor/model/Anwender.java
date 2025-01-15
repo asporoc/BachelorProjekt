@@ -26,9 +26,9 @@ public class Anwender {
     private Bewirtschafter bewirtschafter;
 
     @Transient
-    private Map<TreeNode, Permissions> acl;
+    private Map<SBK, Permissions> acl;
 
-    public Map<TreeNode, Permissions> getAcl() {
+    public Map<SBK, Permissions> getAcl() {
         return acl;
     }
 
@@ -72,7 +72,7 @@ public class Anwender {
         this.bewirtschafter = bewirtschafter;
     }
 
-    public void setAcl(Map<TreeNode, Permissions> acl) {
+    public void setAcl(Map<SBK, Permissions> acl) {
         this.acl = acl;
     }
 }
