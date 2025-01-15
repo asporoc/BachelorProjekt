@@ -36,6 +36,14 @@ public class SBKService {
 
     }
 
+    public SBKRepository getSbkRepository() {
+        return sbkRepository;
+    }
+
+    public void setSbkRepository(SBKRepository sbkRepository) {
+        this.sbkRepository = sbkRepository;
+    }
+
     public List<TreeNode> buildTreeStructure() {
 
         Map<String, TreeNode> nodeMap = createNodeMap(allSbks);
@@ -184,7 +192,8 @@ public class SBKService {
                     bList.addAll(bewirtschafter.getSbks());
                 }
             }
-        }else{
+        }
+        if(anwender.getBehoerde().getBewirtschafter().size()>0 && anwender.getBehoerde().getOrganisationseinheiten() != null){
             for (Bewirtschafter bewirtschafter : anwender.getBehoerde().getBewirtschafter()) {
                 bList.addAll(bewirtschafter.getSbks());
             }
