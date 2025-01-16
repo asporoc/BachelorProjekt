@@ -120,6 +120,29 @@ public class PermissionsTest {
 
 
     }
+
+    @ParameterizedTest
+    @MethodSource("csvColumns")
+    @DisplayName("Validate that role does not have False Positive Rights")
+    @Transactional
+    void testRoleColumnForFalsePositive(String roleName, Map<String, String> permissions) {
+        List<TreeNode> tree = sbkService.buildTreeStructure();
+        sbkService.fillLists(tree);
+        sbkService.fillAnwenderFields(sbkService.allAnwender);
+        Anwender testSubject = sbkService.allAnwender.stream()
+                .filter(anwender -> anwender.getBezeichnung().equals(roleName))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Role not found: " + roleName));
+
+        if (testSubject.getRolle().equals(Rolle.Beauftragte_fuer_den_Haushalt)) {
+            testSubject.setAcl(sbkService.generateBfdHACL(testSubject));
+        } else {
+            testSubject.setAcl(sbkService.generateAnweisendeAndAoBACL(testSubject));
+        }
+        assertFalse(falsePositiveTest(permissions,testSubject.getAcl()));
+
+
+    }
     public static boolean isSubset(Map<String, String> mapA, Map<SBK, Permissions> mapB) {
         for (Map.Entry<String, String> entryA : mapA.entrySet()) {
             String keyA = entryA.getKey().trim();
@@ -135,6 +158,35 @@ public class PermissionsTest {
                 valueB = entryB.getValue().toString().trim();
                 stringStringMap.put(idB,valueB);
                 if (keyA.trim().equals(idB) && valueA.strip().equals(valueB)) {
+                    foundMatch = true;
+                    break;
+                }
+
+            }
+
+            if (!foundMatch) {
+                System.out.println(stringStringMap);
+                return false;
+            }
+        }
+        return true;
+    }
+    /*** Check if Role does not have any rights it should'nt ***/
+    public static boolean falsePositiveTest(Map<String, String> mapA, Map<SBK, Permissions> mapB) {
+        for (Map.Entry<String, String> entryA : mapA.entrySet()) {
+            String keyA = entryA.getKey().trim();
+            String valueA = entryA.getValue().trim();
+            valueA = valueA.trim();
+            String idB = "";
+            String valueB = "";
+            Map<String,String> stringStringMap = new HashMap<>();
+            boolean foundMatch = false;
+
+            for (Map.Entry<SBK, Permissions> entryB : mapB.entrySet()) {
+                idB = entryB.getKey().getId().trim();
+                valueB = entryB.getValue().toString().trim();
+                stringStringMap.put(idB,valueB);
+                if (keyA.trim().equals(idB) && valueA.strip().equals(".")) {
                     foundMatch = true;
                     break;
                 }
