@@ -1,0 +1,486 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 16.3
+-- Dumped by pg_dump version 16.3
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- Name: rolle; Type: TYPE; Schema: public; Owner: postgres
+--
+
+CREATE TYPE public.rolle AS ENUM (
+    'Beauftragte_fuer_den_Haushalt',
+    'Anordnungsbefugte',
+    'Anweisende'
+);
+
+
+ALTER TYPE public.rolle OWNER TO postgres;
+
+SET default_tablespace = '';
+
+SET default_table_access_method = heap;
+
+--
+-- Name: anwender; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.anwender (
+    bezeichnung character varying(255) NOT NULL,
+    rolle character varying(255) NOT NULL,
+    behoerde character varying(255),
+    organisationseinheit character varying(255),
+    bewirtschafter character varying(255)
+);
+
+
+ALTER TABLE public.anwender OWNER TO postgres;
+
+--
+-- Name: behoerde; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.behoerde (
+    name character varying(255) NOT NULL
+);
+
+
+ALTER TABLE public.behoerde OWNER TO postgres;
+
+--
+-- Name: bewirtschafter; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.bewirtschafter (
+    name character varying(255) NOT NULL,
+    org character varying(255),
+    behoerde character varying(255),
+    CONSTRAINT bewirtschafter_check CHECK (((behoerde IS NULL) <> (org IS NULL)))
+);
+
+
+ALTER TABLE public.bewirtschafter OWNER TO postgres;
+
+--
+-- Name: organisationseinheit; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.organisationseinheit (
+    name character varying(255) NOT NULL,
+    behoerde character varying(255)
+);
+
+
+ALTER TABLE public.organisationseinheit OWNER TO postgres;
+
+--
+-- Name: sbk; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.sbk (
+    haushaltsnummer character varying(255) NOT NULL,
+    id character varying(255) NOT NULL,
+    parent_id character varying(255),
+    bewirtschafter character varying(255) NOT NULL
+);
+
+
+ALTER TABLE public.sbk OWNER TO postgres;
+
+--
+-- Data for Name: anwender; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.anwender (bezeichnung, rolle, behoerde, organisationseinheit, bewirtschafter) FROM stdin;
+BfdH BMI	Beauftragte_fuer_den_Haushalt	BMI	\N	\N
+Anweisende MV BMI EP 06	Anweisende	BMI	\N	MV1 BMI EP 06
+BfdH ZITIS	Beauftragte_fuer_den_Haushalt	ZITIS-MV	\N	\N
+Anweisende MV ZITIS	Anweisende	ZITIS-MV	\N	MV ZITIS
+AoB TV ZITIS	Anordnungsbefugte	ZITIS-MV	\N	TV ZITIS
+Anweisende MV1 BMF	Anweisende	BMF-EP08	\N	MV1 BMF EP 08
+AoB ZentrD BMF	Anordnungsbefugte	BMF-EP08	\N	TV ZentrD BMF
+AoB Personal BMF	Anordnungsbefugte	BMF-EP08	\N	TV Personal BMF
+AoB ZentrIT BMF	Anordnungsbefugte	BMF-EP08	\N	TV ZentrIT BMF
+BfdH UKRat	Beauftragte_fuer_den_Haushalt	UKRat-MV1-EP22	\N	\N
+AoB UKRat	Anordnungsbefugte	UKRat-MV1-EP22	\N	TV UKRat-allg. Haushalt
+BfdH GZD	Beauftragte_fuer_den_Haushalt	GZD	\N	\N
+AoB TV SC1 Personal	Anordnungsbefugte	GZD	GZD-allg. Haushalt	TV GZD allg. Haushalt
+Anweisende MV GZD Region N	Anweisende	GZD	GZD-Region N	MV GZD Region N
+Anweisende MV GZD Region H	Anweisende	GZD	GZD-Region H	MV GZD Region H
+Anweisende MV SC1	Anweisende	GZD	GZD-ServiceCenter 1	MV SC1
+AoB TV SC1 Reise	Anordnungsbefugte	GZD	GZD-ServiceCenter 1	TV SC1 Reise
+Anweisende MV SC2	Anweisende	GZD	GZD-ServiceCenter 2	MV SC2
+AoB TV SC2 Reise	Anordnungsbefugte	GZD	GZD-ServiceCenter 2	TV SC2 Reise
+BfdH BBF	Beauftragte_fuer_den_Haushalt	BBF	\N	\N
+Anweisende MV BBF	Anweisende	BBF	\N	MV BBF
+AoB TV BBF	Anordnungsbefugte	BBF	\N	TV BBF-allg. Haushalt
+BfdH HZA A	Beauftragte_fuer_den_Haushalt	HZA-A	\N	\N
+Anweisende MV HZA A	Anweisende	HZA-A	\N	MV HZA A
+AoB TV HZA A allg	Anordnungsbefugte	HZA-A	\N	HZA A TV allg.
+BfdH HZA B	Beauftragte_fuer_den_Haushalt	HZA-B	\N	\N
+Anweisende MV HZA B	Anweisende	HZA-B	\N	MV HZA B
+AoB TV HZA B allg	Anordnungsbefugte	HZA-B	\N	HZA B TV allg.
+BfdH BMF - EP08	Beauftragte_fuer_den_Haushalt	BMF-EP08	\N	\N
+BfdH BMF - EP60	Beauftragte_fuer_den_Haushalt	BMF-EP60	\N	\N
+Anweisende MV BMF EP 60	Anweisende	BMF-EP60	\N	MV1 BMF EP 60
+Anweisende MV BMF Kapitel 6001	Anweisende	BMF-EP60	\N	MV BMF Kapitel 6001
+Anweisende MV BMF Verbrauchssteuer-Referat	Anweisende	BMF-EP60	\N	MV BMF Verbrauchssteuer-Referat
+Anweisende MV GZD MOEVE	Anweisende	GZD	\N	MV GZD MOEVE
+AoB HZA A TV MOEVE	Anordnungsbefugte	HZA-A	\N	HZA A TV MOEVE
+AoB HZA B TV MOEVE	Anordnungsbefugte	HZA-B	\N	HZA B TV MOEVE
+AoB HZA A TV Kfz-Steuer	Anordnungsbefugte	HZA-A	\N	HZA A TV Kfz-Steuer
+AoB HZA B TV Kfz-Steuer	Anordnungsbefugte	HZA-B	\N	HZA B TV Kfz-Steuer
+\.
+
+
+--
+-- Data for Name: behoerde; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.behoerde (name) FROM stdin;
+BMI
+ZITIS-MV
+BMF-EP08
+UKRat-MV1-EP22
+GZD
+BBF
+HZA-A
+HZA-B
+BMF-EP60
+\.
+
+
+--
+-- Data for Name: bewirtschafter; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.bewirtschafter (name, org, behoerde) FROM stdin;
+MV1 BMI EP 06	\N	BMI
+MV ZITIS	\N	ZITIS-MV
+TV ZITIS	\N	ZITIS-MV
+TV ZentrD BMF	\N	BMF-EP08
+TV Personal BMF	\N	BMF-EP08
+TV ZentrIT BMF	\N	BMF-EP08
+TV UKRat-allg. Haushalt	\N	UKRat-MV1-EP22
+MV BBF	\N	BBF
+TV BBF-allg. Haushalt	\N	BBF
+MV HZA A	\N	HZA-A
+HZA A TV allg.	\N	HZA-A
+MV HZA B	\N	HZA-B
+HZA B TV allg.	\N	HZA-B
+MV GZD	GZD-allg. Haushalt	\N
+TV GZD allg. Haushalt	GZD-allg. Haushalt	\N
+MV GZD Region N	GZD-Region N	\N
+MV GZD Region H	GZD-Region H	\N
+MV SC1	GZD-ServiceCenter 1	\N
+TV SC1 Reise	GZD-ServiceCenter 1	\N
+MV SC2	GZD-ServiceCenter 2	\N
+TV SC2 Reise	GZD-ServiceCenter 2	\N
+TV Personal GZD	GZD-Zentraler Personalservice	\N
+MV1 UKRat EP 22	\N	UKRat-MV1-EP22
+MV1 BMF EP 08	\N	BMF-EP08
+MV1 BMF EP 60	\N	BMF-EP60
+MV BMF Kapitel 6001	\N	BMF-EP60
+MV BMF Verbrauchssteuer-Referat	\N	BMF-EP60
+MV GZD MOEVE	\N	GZD
+HZA A TV MOEVE	\N	HZA-A
+HZA A TV Kfz-Steuer	\N	HZA-A
+HZA B TV MOEVE	\N	HZA-B
+HZA B TV Kfz-Steuer	\N	HZA-B
+\.
+
+
+--
+-- Data for Name: organisationseinheit; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.organisationseinheit (name, behoerde) FROM stdin;
+GZD-allg. Haushalt	GZD
+GZD-Region N	GZD
+GZD-Region H	GZD
+GZD-ServiceCenter 1	GZD
+GZD-ServiceCenter 2	GZD
+GZD-Zentraler Personalservice	GZD
+\.
+
+
+--
+-- Data for Name: sbk; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.sbk (haushaltsnummer, id, parent_id, bewirtschafter) FROM stdin;
+0622 42201	BMI-MV1-EP06 0622 42201	\N	MV1 BMI EP 06
+0622 42201	MV ZITIS 0622 42201	BMI-MV1-EP06 0622 42201	MV ZITIS
+0622 42201	TV ZITIS 0622 42201	MV ZITIS 0622 42201	TV ZITIS
+0622 52701	BMI-MV1-EP06 0622 52701	\N	MV1 BMI EP 06
+0622 52701	MV ZITIS 0622 52701	BMI-MV1-EP06 0622 52701	MV ZITIS
+0622 52701	MV GZD 0622 52701	MV ZITIS 0622 52701	MV GZD
+0622 52701	MV GZD 0622 52701 Objekt SC1	MV GZD 0622 52701	MV GZD
+0622 52701	MV GZD 0622 52701 Objekt SC2	MV GZD 0622 52701	MV GZD
+0622 52701	MV SC1 0622 52701 Objekt SC1	MV GZD 0622 52701 Objekt SC1	MV SC1
+0622 52701	MV SC2 0622 52701 Objekt SC2	MV GZD 0622 52701 Objekt SC2	MV SC2
+0622 52701	TV SC1 Reise 0622 52701 Objekt SC1	MV SC1 0622 52701 Objekt SC1	TV SC1 Reise
+0812 52501	BMF-MV1-EP08 0812 52501	\N	MV1 BMF EP 08
+0812 52501	MV GZD 0812 52501	BMF-MV1-EP08 0812 52501	MV GZD
+0812 52501	MV SC1 0812 52501	MV GZD 0812 52501	MV SC1
+0812 52501	MV SC2 0812 52501	MV GZD 0812 52501	MV SC2
+0812 52501	TV SC1 0812 52501	MV SC1 0812 52501	TV SC1 Reise
+0812 52501	TV SC2 0812 52501	MV SC2 0812 52501	TV SC2 Reise
+0812 52701	BMF-MV1-EP08 0812 52701	\N	MV1 BMF EP 08
+0812 52701	MV GZD 0812 52701	BMF-MV1-EP08 0812 52701	MV GZD
+0812 52701	MV SC1 0812 52701	MV GZD 0812 52701	MV SC1
+0812 52701	MV SC2 0812 52701	MV GZD 0812 52701	MV SC2
+0812 52701	TV SC1 0812 52701	MV SC1 0812 52701	TV SC1 Reise
+0812 52701	TV SC2 0812 52701	MV SC2 0812 52701	TV SC2 Reise
+0814 52501	BMF-MV1-EP08 0814 52501	\N	MV1 BMF EP 08
+0814 52501	MV GZD 0814 52501	BMF-MV1-EP08 0814 52501	MV GZD
+0814 52501	MV SC1 0814 52501	MV GZD 0814 52501	MV SC1
+0814 52501	MV SC2 0814 52501	MV GZD 0814 52501	MV SC2
+0814 52501	TV SC1 0814 52501	MV SC1 0814 52501	TV SC1 Reise
+0814 52501	TV SC2 0814 52501	MV SC2 0814 52501	TV SC2 Reise
+0814 52701	BMF-MV1-EP08 0814 52701	\N	MV1 BMF EP 08
+0814 52701	MV GZD 0814 52701	BMF-MV1-EP08 0814 52701	MV GZD
+0814 52701	MV SC1 0814 52701	MV GZD 0814 52701	MV SC1
+0814 52701	MV SC2 0814 52701	MV GZD 0814 52701	MV SC2
+0814 52701	TV SC1 0814 52701	MV SC1 0814 52701	TV SC1 Reise
+0814 52701	TV SC2 0814 52701	MV SC2 0814 52701	TV SC2 Reise
+0814 51101	BMF-MV1-EP08 0814 51101	\N	MV1 BMF EP 08
+0814 51101	MV BBF 0814 51101	BMF-MV1-EP08 0814 51101	MV BBF
+0814 51101	TV BBF-allg. Haushalt 0814 51101	MV BBF 0814 51101	TV BBF-allg. Haushalt
+0814 42201	BMF-MV1-EP08 0814 42201	\N	MV1 BMF EP 08
+0814 42201	MV BBF 0814 42201	BMF-MV1-EP08 0814 42201	MV BBF
+0814 42201	TV BBF-allg. Haushalt 0814 42201	MV BBF 0814 42201	TV BBF-allg. Haushalt
+0812 51101	BMF-MV1-EP08 0812 51101	\N	MV1 BMF EP 08
+0812 51101	TV ZentrD BMF 0812 51101	BMF-MV1-EP08 0812 51101	TV ZentrD BMF
+0812 53201	BMF-MV1-EP08 0812 53201	\N	MV1 BMF EP 08
+0812 53201	TV ZentrIT BMF 0812 53201	BMF-MV1-EP08 0812 53201	TV ZentrIT BMF
+0812 42201	BMF-MV1-EP08 0812 42201	\N	MV1 BMF EP 08
+0812 42201	TV Personal BMF 0812 42201	BMF-MV1-EP08 0812 42201	TV Personal BMF
+0813 42201	BMF-MV1-EP08 0813 42201	\N	MV1 BMF EP 08
+0813 42201	MV GZD 0813 42201	BMF-MV1-EP08 0813 42201	MV GZD
+0813 42201	MV GZD Region N 0813 42201	MV GZD 0813 42201	MV GZD Region N
+0813 42201	MV HZA A 0813 42201	MV GZD Region N 0813 42201	MV HZA A
+0813 42201	HZA A TV allg. 0813 42201	MV HZA A 0813 42201	HZA A TV allg.
+0813 42201	MV GZD Region H 0813 42201	MV GZD 0813 42201	MV GZD Region H
+0813 42201	MV HZA B 0813 42201	MV GZD Region H 0813 42201	MV HZA B
+0813 42201	HZA B TV allg. 0813 42201	MV HZA B 0813 42201	HZA B TV allg.
+0813 42201	MV SC1 0813 42201	MV GZD 0813 42201	MV SC1
+0813 42201	MV SC2 0813 42201	MV GZD 0813 42201	MV SC2
+0813 52501	BMF-MV1-EP08 0813 52501	\N	MV1 BMF EP 08
+0813 52501	MV GZD 0813 52501 	BMF-MV1-EP08 0813 52501	MV GZD
+0813 52501	MV SC1 0813 52501 	MV GZD 0813 52501 	MV SC1
+0813 52501 	TV SC1 Reise 0813 52501	MV SC1 0813 52501 	TV SC1 Reise
+0813 52501	MV SC2 0813 52501	MV GZD 0813 52501 	MV SC2
+0813 52501	TV SC2 Reise 0813 52501	MV SC2 0813 52501	TV SC2 Reise
+0813 51101	BMF-MV1-EP08 0813 51101	\N	MV1 BMF EP 08
+0813 51101	MV GZD 0813 51101	BMF-MV1-EP08 0813 51101	MV GZD
+0813 51101	MV GZD Region N 0813 51101	MV GZD 0813 51101	MV GZD Region N
+0813 51101	MV HZA A 0813 51101	MV GZD Region N 0813 51101	MV HZA A
+0813 51101	HZA A TV allg. 0813 51101	MV HZA A 0813 51101	HZA A TV allg.
+0813 51101	MV GZD Region H 0813 51101	MV GZD 0813 51101	MV GZD Region H
+0813 51101	HZA B TV allg. 0813 51101	MV HZA B 0813 51101	HZA B TV allg.
+0813 52501	MV GZD Region N 0813 52501	MV GZD 0813 52501 	MV GZD Region N
+0813 52501	MV HZA A 0813 52501	MV GZD Region N 0813 52501	MV HZA A
+0813 51101	MV HZA B 0813 51101	MV GZD Region H 0813 51101	MV HZA B
+0622 52701	TV SC2 Reise 0622 52701 Objekt SC2	MV SC2 0622 52701 Objekt SC2	TV SC2 Reise
+0622 51101	BMI-MV1-EP06 0622 51101	\N	MV1 BMI EP 06
+0622 51101	MV ZITIS 0622 51101	BMI-MV1-EP06 0622 51101	MV ZITIS
+0622 51101	TV ZITIS 0622 51101	MV ZITIS 0622 51101	TV ZITIS
+0622 52501	BMI-MV1-EP06 0622 52501	\N	MV1 BMI EP 06
+0622 52501	BMF-MV1-EP08 0622 52501	BMI-MV1-EP06 0622 52501	MV1 BMF EP 08
+0622 52501	MV GZD 0622 52501	BMF-MV1-EP08 0622 52501	MV GZD
+0622 52501	MV GZD 0622 52501 Objekt SC1	MV GZD 0622 52501	MV GZD
+0622 52501	MV GZD 0622 52501 Objekt SC2	MV GZD 0622 52501	MV GZD
+0622 52501	MV SC1 0622 52501 Objekt SC1	MV GZD 0622 52501 Objekt SC1	MV SC1
+0622 52501	MV SC2 0622 52501 Objekt SC2	MV GZD 0622 52501 Objekt SC2	MV SC2
+0813 52501	HZA A TV allg. 0813 52501	MV HZA A 0813 52501	HZA A TV allg.
+0813 52501	MV GZD Region H 0813 52501	MV GZD 0813 52501 	MV GZD Region H
+0813 52501	MV HZA B 0813 52501	MV GZD Region H 0813 52501	MV HZA B
+0813 52501	HZA B TV allg. 0813 52501	MV HZA B 0813 52501	HZA B TV allg.
+0813 52701	BMF-MV1-EP08 0813 52701	\N	MV1 BMF EP 08
+0813 52701	MV GZD 0813 52701	BMF-MV1-EP08 0813 52701	MV GZD
+0813 52701	MV GZD Region N 0813 52701	MV GZD 0813 52701	MV GZD Region N
+0813 52701	MV HZA A 0813 52701	MV GZD Region N 0813 52701	MV HZA A
+0813 52701	HZA A TV allg. 0813 52701	MV HZA A 0813 52701	HZA A TV allg.
+0813 52701	MV GZD Region H 0813 52701	MV GZD 0813 52701	MV GZD Region H
+0813 52701	MV HZA B 0813 52701	MV GZD Region H 0813 52701	MV HZA B
+0813 52701	HZA B TV allg. 0813 52701	MV HZA B 0813 52701	HZA B TV allg.
+0813 52701	MV SC1 0813 52701	MV GZD 0813 52701	MV SC1
+0813 52701	TV SC1 Reise 0813 52701	MV SC1 0813 52701	TV SC1 Reise
+0813 52701	MV SC2 0813 52701	MV GZD 0813 52701	MV SC2
+2212 52501	UKRat-MV1-EP22 2212 52501	\N	MV1 UKRat EP 22
+2212 52501	MV SC1 2212 52501	UKRat-MV1-EP22 2212 52501	MV SC1
+2212 52501	TV SC1 2212 52501	MV SC1 2212 52501	TV SC1 Reise
+2212 52501	MV SC2 2212 52501	UKRat-MV1-EP22 2212 52501	MV SC2
+2212 52501	TV SC2 2212 52501	MV SC2 2212 52501	TV SC2 Reise
+2212 52701	UKRat-MV1-EP22 2212 52701	\N	MV1 UKRat EP 22
+2212 52701	MV SC1 2212 52701	UKRat-MV1-EP22 2212 52701	MV SC1
+2212 52701	TV SC1 2212 52701	MV SC1 2212 52701	TV SC1 Reise
+2212 52701	MV SC2 2212 52701	UKRat-MV1-EP22 2212 52701	MV SC2
+2212 52701	TV SC2 2212 52701	MV SC2 2212 52701	TV SC2 Reise
+2212 42201	UKRat-MV1-EP22 2212 42201	\N	MV1 UKRat EP 22
+2212 42201	TV UKRat-allg. Haushalt 2212 42201	UKRat-MV1-EP22 2212 42201	TV UKRat-allg. Haushalt
+2212 51101	UKRat-MV1-EP22 2212 51101	\N	MV1 UKRat EP 22
+2212 51101	TV UKRat-allg. Haushalt 2212 51101	UKRat-MV1-EP22 2212 51101	TV UKRat-allg. Haushalt
+0813 52701	TV SC2 Reise 0813 52701	MV SC2 0813 52701	TV SC2 Reise
+0622 52501	TV SC1 0622 52501 Objekt SC1	MV SC1 0622 52501 Objekt SC1	TV SC1 Reise
+0622 52501	TV SC2 0622 52501 Objekt SC2	MV SC2 0622 52501 Objekt SC2	TV SC2 Reise
+0813 51101	TV GZD-allg. Haushalt 0813 51101	MV GZD 0813 51101	TV GZD allg. Haushalt
+6001 03102	BMF-MV1-EP60 6001 03102	\N	MV1 BMF EP 60
+6001 03103	BMF-MV1-EP60 6001 03103	\N	MV1 BMF EP 60
+6001 03104	BMF-MV1-EP60 6001 03104	\N	MV1 BMF EP 60
+6001 03801	BMF-MV1-EP60 6001 03801	\N	MV1 BMF EP 60
+6001 03102	BMF-MV-Kapitel-6001 6001 03102	BMF-MV1-EP60 6001 03102	MV BMF Kapitel 6001
+6001 03102	BMF-MV-Verbrauchssteuer-Referat BMF-MV-Kapitel-6001 6001 03102	BMF-MV-Kapitel-6001 6001 03102	MV BMF Verbrauchssteuer-Referat
+6001 03102	MV GZD 6001 03102	BMF-MV-Verbrauchssteuer-Referat BMF-MV-Kapitel-6001 6001 03102	MV GZD
+6001 03102	MV GZD MOEVE 6001 03102	MV GZD 6001 03102	MV GZD MOEVE
+6001 03102	MV GZD Region N 6001 03102	MV GZD MOEVE 6001 03102	MV GZD Region N
+6001 03102	MV GZD Region H 6001 03102	MV GZD MOEVE 6001 03102	MV GZD Region H
+6001 03102	HZA A TV MOEVE 6001 03102	MV GZD Region N 6001 03102	HZA A TV MOEVE
+6001 03102	HZA B TV MOEVE 6001 03102	MV GZD Region H 6001 03102	HZA B TV MOEVE
+6001 03103	BMF-MV-Kapitel-6001 6001 03103	BMF-MV1-EP60 6001 03103	MV BMF Kapitel 6001
+6001 03103	BMF-MV-Verbrauchssteuer-Referat BMF-MV-Kapitel-6001 6001 03103	BMF-MV-Kapitel-6001 6001 03103	MV BMF Verbrauchssteuer-Referat
+6001 03103	MV GZD 6001 03103	BMF-MV-Verbrauchssteuer-Referat BMF-MV-Kapitel-6001 6001 03103	MV GZD
+6001 03103	MV GZD MOEVE 6001 03103	MV GZD 6001 03103	MV GZD MOEVE
+6001 03103	MV GZD Region N 6001 03103	MV GZD MOEVE 6001 03103	MV GZD Region N
+6001 03103	MV GZD Region H 6001 03103	MV GZD MOEVE 6001 03103	MV GZD Region H
+6001 03103	HZA A TV MOEVE 6001 03103	MV GZD Region N 6001 03103	HZA A TV MOEVE
+6001 03103	HZA B TV MOEVE 6001 03103	MV GZD Region H 6001 03103	HZA B TV MOEVE
+6001 03104	BMF-MV-Kapitel-6001 6001 03104	BMF-MV1-EP60 6001 03104	MV BMF Kapitel 6001
+6001 03104	BMF-MV-Verbrauchssteuer-Referat BMF-MV-Kapitel-6001 6001 03104	BMF-MV-Kapitel-6001 6001 03104	MV BMF Verbrauchssteuer-Referat
+6001 03104	MV GZD 6001 03104	BMF-MV-Verbrauchssteuer-Referat BMF-MV-Kapitel-6001 6001 03104	MV GZD
+6001 03104	MV GZD MOEVE 6001 03104	MV GZD 6001 03104	MV GZD MOEVE
+6001 03104	MV GZD Region N 6001 03104	MV GZD MOEVE 6001 03104	MV GZD Region N
+6001 03104	HZA A TV MOEVE 6001 03104	MV GZD Region N 6001 03104	HZA A TV MOEVE
+6001 03104	MV GZD Region H 6001 03104	MV GZD MOEVE 6001 03104	MV GZD Region H
+6001 03104	HZA B TV MOEVE 6001 03104	MV GZD Region H 6001 03104	HZA B TV MOEVE
+6001 03801	MV BMF Kapitel 6001 6001 03801	BMF-MV1-EP60 6001 03801	MV BMF Kapitel 6001
+6001 03801	MV BMF Verbrauchssteuer-Referat 6001 03801	MV BMF Kapitel 6001 6001 03801	MV BMF Verbrauchssteuer-Referat
+6001 03801	MV GZD 6001 03801	MV BMF Verbrauchssteuer-Referat 6001 03801	MV GZD
+6001 03801	MV GZD Region N 6001 03801	MV GZD 6001 03801	MV GZD Region N
+6001 03801	MV GZD Region H 6001 03801	MV GZD 6001 03801	MV GZD Region H
+6001 03801	HZA B TV Kfz-Steuer 6001 03801	MV GZD Region H 6001 03801	HZA B TV Kfz-Steuer
+6001 03801	HZA A TV Kfz-Steuer 6001 03801	MV GZD Region N 6001 03801	HZA A TV Kfz-Steuer
+\.
+
+
+--
+-- Name: anwender anwender_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.anwender
+    ADD CONSTRAINT anwender_pkey PRIMARY KEY (bezeichnung);
+
+
+--
+-- Name: behoerde behoerde_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.behoerde
+    ADD CONSTRAINT behoerde_pkey PRIMARY KEY (name);
+
+
+--
+-- Name: bewirtschafter bewirtschafter_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.bewirtschafter
+    ADD CONSTRAINT bewirtschafter_pkey PRIMARY KEY (name);
+
+
+--
+-- Name: organisationseinheit organisationseinheit_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.organisationseinheit
+    ADD CONSTRAINT organisationseinheit_pkey PRIMARY KEY (name);
+
+
+--
+-- Name: sbk sbk_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.sbk
+    ADD CONSTRAINT sbk_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: anwender anwender_behoerde_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.anwender
+    ADD CONSTRAINT anwender_behoerde_fkey FOREIGN KEY (behoerde) REFERENCES public.behoerde(name);
+
+
+--
+-- Name: anwender anwender_bewirtschafter_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.anwender
+    ADD CONSTRAINT anwender_bewirtschafter_fkey FOREIGN KEY (bewirtschafter) REFERENCES public.bewirtschafter(name);
+
+
+--
+-- Name: anwender anwender_organisationseinheit_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.anwender
+    ADD CONSTRAINT anwender_organisationseinheit_fkey FOREIGN KEY (organisationseinheit) REFERENCES public.organisationseinheit(name);
+
+
+--
+-- Name: bewirtschafter bewirtschafter_behoerde_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.bewirtschafter
+    ADD CONSTRAINT bewirtschafter_behoerde_fkey FOREIGN KEY (behoerde) REFERENCES public.behoerde(name);
+
+
+--
+-- Name: bewirtschafter bewirtschafter_org_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.bewirtschafter
+    ADD CONSTRAINT bewirtschafter_org_fkey FOREIGN KEY (org) REFERENCES public.organisationseinheit(name);
+
+
+--
+-- Name: organisationseinheit organisationseinheit_behoerde_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.organisationseinheit
+    ADD CONSTRAINT organisationseinheit_behoerde_fkey FOREIGN KEY (behoerde) REFERENCES public.behoerde(name);
+
+
+--
+-- Name: sbk sbk_bewirtschafter_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.sbk
+    ADD CONSTRAINT sbk_bewirtschafter_fkey FOREIGN KEY (bewirtschafter) REFERENCES public.bewirtschafter(name);
+
+
+--
+-- Name: sbk sbk_parent_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.sbk
+    ADD CONSTRAINT sbk_parent_id_fkey FOREIGN KEY (parent_id) REFERENCES public.sbk(id);
+
+
+--
+-- PostgreSQL database dump complete
+--
+
