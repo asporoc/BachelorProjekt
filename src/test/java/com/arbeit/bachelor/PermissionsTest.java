@@ -65,12 +65,12 @@ public class PermissionsTest {
                         String role = roles.get(i - 1);
                         String permission = values[i].trim();
 
-                        if (!permission.equals(".")) {
+                        //if (!permission.equals(".")) {
                             if(permission.equals("(L)")) {
                             permission = "L";
                             }
                             roleMap.get(role).put(account, permission);
-                        }
+                       // }
                     }
                 } catch (Exception e) {
                     System.err.println("Error processing line: " + line);
@@ -139,7 +139,7 @@ public class PermissionsTest {
         } else {
             testSubject.setAcl(sbkService.generateAnweisendeAndAoBACL(testSubject));
         }
-        assertFalse(falsePositiveTest(permissions,testSubject.getAcl()));
+        assertTrue(falsePositiveTest(permissions,testSubject.getAcl()));
 
 
     }
@@ -157,6 +157,10 @@ public class PermissionsTest {
                 idB = entryB.getKey().getId().trim();
                 valueB = entryB.getValue().toString().trim();
                 stringStringMap.put(idB,valueB);
+                if(valueA.equals(".")){
+                    foundMatch =true;
+                    break;
+                }
                 if (keyA.trim().equals(idB) && valueA.strip().equals(valueB)) {
                     foundMatch = true;
                     break;
@@ -176,26 +180,14 @@ public class PermissionsTest {
         for (Map.Entry<String, String> entryA : mapA.entrySet()) {
             String keyA = entryA.getKey().trim();
             String valueA = entryA.getValue().trim();
-            valueA = valueA.trim();
-            String idB = "";
-            String valueB = "";
-            Map<String,String> stringStringMap = new HashMap<>();
-            boolean foundMatch = false;
 
-            for (Map.Entry<SBK, Permissions> entryB : mapB.entrySet()) {
-                idB = entryB.getKey().getId().trim();
-                valueB = entryB.getValue().toString().trim();
-                stringStringMap.put(idB,valueB);
-                if (keyA.trim().equals(idB) && valueA.strip().equals(".")) {
-                    foundMatch = true;
-                    break;
+            if (valueA.equals(".")) {
+                boolean keyExistsInB = mapB.keySet().stream()
+                        .anyMatch(sbk -> sbk.getId().trim().equals(keyA));
+
+                if (keyExistsInB) {
+                    return false;
                 }
-
-            }
-
-            if (!foundMatch) {
-                System.out.println(stringStringMap);
-                return false;
             }
         }
         return true;
