@@ -17,8 +17,8 @@ import java.util.Map;
 @Controller
 public class SBKController {
 
-    private final SBKRepository sbkRepository;
-    private final SBKService sbkService;
+    private SBKRepository sbkRepository;
+    private SBKService sbkService;
 
     public SBKController(SBKRepository sbkRepository, SBKService sbkService) {
         this.sbkRepository = sbkRepository;
@@ -45,6 +45,10 @@ public class SBKController {
     @GetMapping("/acl/{anwender}")
     @ResponseBody
     public Map<String, String> getAclForAnwender(@PathVariable String anwender) {
+
+        List<TreeNode> tree = sbkService.buildTreeStructure();
+        sbkService.fillLists(tree);
+        sbkService.fillAnwenderFields(sbkService.allAnwender);
         Anwender selectedAnwender = sbkService.allAnwender.stream()
                 .filter(a -> a.getBezeichnung().equals(anwender))
                 .findFirst()
@@ -69,5 +73,147 @@ public class SBKController {
         return response;
         }
         return Collections.emptyMap();
+    }
+    /*** Gibt min, max und avg antwortzeit für eine Anwender abfrage an ***/
+    @GetMapping("/test/acl-performance/{anwender}")
+    @ResponseBody
+    public Map<String, Object> testAclPerformance(@PathVariable String anwender) {
+        final int iterations = 100;
+        long totalExecutionTime = 0;
+        long maxTime = Long.MIN_VALUE;
+        long minTime = Long.MAX_VALUE;
+        Map<String, String> lastResult = null;
+
+        Runtime runtime = Runtime.getRuntime();
+        long startMemory = runtime.totalMemory() - runtime.freeMemory();
+
+        for (int i = 0; i < iterations; i++) {
+            long startTime = System.nanoTime();
+
+            lastResult = getAclForAnwender(anwender);
+
+            long endTime = System.nanoTime();
+            long executionTime = endTime - startTime;
+
+            totalExecutionTime += executionTime;
+            maxTime = Math.max(maxTime, executionTime);
+            minTime = Math.min(minTime, executionTime);
+        }
+
+        long endMemory = runtime.totalMemory() - runtime.freeMemory();
+        long memoryUsed = endMemory - startMemory;
+
+        Map<String, Object> results = new HashMap<>();
+        results.put("averageTimeMs", totalExecutionTime / (iterations * 1_000_000.0));
+        results.put("maxTimeMs", maxTime / 1_000_000.0);
+        results.put("minTimeMs", minTime / 1_000_000.0);
+        results.put("memoryUsedKb", memoryUsed / 1024.0);
+        results.put("lastResult", lastResult);
+
+        return results;
+    }
+
+    /*** git min, max und avg antwortzeit für eine query jedes users an ***/
+    @GetMapping("/test/acl-performance/all")
+    @ResponseBody
+    public Map<String, Object> testAclPerformanceForAllAnwenders() {
+        final int iterations = 100;
+        Runtime runtime = Runtime.getRuntime();
+
+        Map<String, Map<String, Object>> performanceMetrics = new HashMap<>();
+
+
+        for (Anwender anwender : sbkService.allAnwender) {
+            String anwenderName = anwender.getBezeichnung();
+            long totalExecutionTime = 0;
+            long maxTime = Long.MIN_VALUE;
+            long minTime = Long.MAX_VALUE;
+            long memoryUsed = 0;
+            Map<String, String> lastResult = null;
+
+            long startMemory = runtime.totalMemory() - runtime.freeMemory();
+
+            for (int i = 0; i < iterations; i++) {
+                long startTime = System.nanoTime();
+
+                lastResult = getAclForAnwender(anwenderName);
+
+                long endTime = System.nanoTime();
+                long executionTime = endTime - startTime;
+
+                totalExecutionTime += executionTime;
+                maxTime = Math.max(maxTime, executionTime);
+                minTime = Math.min(minTime, executionTime);
+            }
+
+            long endMemory = runtime.totalMemory() - runtime.freeMemory();
+            memoryUsed = endMemory - startMemory;
+
+            Map<String, Object> metrics = new HashMap<>();
+            metrics.put("averageTimeMs", totalExecutionTime / (iterations * 1_000_000.0));
+            metrics.put("maxTimeMs", maxTime / 1_000_000.0);
+            metrics.put("minTimeMs", minTime / 1_000_000.0);
+            metrics.put("memoryUsedKb", memoryUsed / 1024.0);
+            metrics.put("lastResult", lastResult);
+
+            performanceMetrics.put(anwenderName, metrics);
+        }
+
+        //results
+        Map<String, Object> result = new HashMap<>();
+        result.put("totalUsersTested", sbkService.allAnwender.size());
+        result.put("metrics", performanceMetrics);
+
+        return result;
+    }
+
+    /*** Gibt die durchschnittliche längste, kürzeste und durchschnittliche Antwortzeit eines API Endpoints an ***/
+    @GetMapping("/test/acl-performance")
+    @ResponseBody
+    public Map<String, Object> testAclPerformanceForAllUsers() {
+        List<Anwender> allAnwender = sbkService.allAnwender;
+
+
+        long totalExecutionTime = 0;
+        long maxExecutionTime = Long.MIN_VALUE;
+        long minExecutionTime = Long.MAX_VALUE;
+        int totalRequests = allAnwender.size();
+
+        for (Anwender anwender : allAnwender) {
+            String anwenderName = anwender.getBezeichnung();
+            long startTime = System.nanoTime();
+
+
+            sbkService.allAnwender.stream()
+                    .filter(a -> a.getBezeichnung().equals(anwenderName))
+                    .findFirst()
+                    .ifPresent(selectedAnwender -> {
+                        if (selectedAnwender.getRolle().equals(Rolle.Beauftragte_fuer_den_Haushalt)) {
+                            sbkService.generateBfdHACL(selectedAnwender);
+                        } else {
+                            sbkService.generateAnweisendeAndAoBACL(selectedAnwender);
+                        }
+                    });
+
+            long elapsedTime = System.nanoTime() - startTime;
+
+            totalExecutionTime += elapsedTime;
+            maxExecutionTime = Math.max(maxExecutionTime, elapsedTime);
+            minExecutionTime = Math.min(minExecutionTime, elapsedTime);
+        }
+
+
+        double avgExecutionTimeMs = (double) totalExecutionTime / totalRequests / 1_000_000;
+        double maxExecutionTimeMs = maxExecutionTime / 1_000_000.0;
+        double minExecutionTimeMs = minExecutionTime / 1_000_000.0;
+
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("totalRequests", totalRequests);
+        response.put("averageExecutionTimeMs", avgExecutionTimeMs);
+        response.put("maxExecutionTimeMs", maxExecutionTimeMs);
+        response.put("minExecutionTimeMs", minExecutionTimeMs);
+
+        return response;
     }
 }

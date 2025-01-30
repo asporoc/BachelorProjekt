@@ -5,6 +5,7 @@ import com.arbeit.bachelor.service.SBKService;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -65,17 +66,17 @@ public class PermissionsTest {
                         String role = roles.get(i - 1);
                         String permission = values[i].trim();
 
-                        //if (!permission.equals(".")) {
+
                             if(permission.equals("(L)")) {
                             permission = "L";
                             }
                             roleMap.get(role).put(account, permission);
-                       // }
+
                     }
                 } catch (Exception e) {
                     System.err.println("Error processing line: " + line);
                     e.printStackTrace();
-                    throw e; // Re-throw after logging, if needed
+                    throw e;
                 }
             }
 
@@ -97,6 +98,7 @@ public class PermissionsTest {
                         entry.getValue()
                 ));
     }
+
 
     @ParameterizedTest
     @MethodSource("csvColumns")
@@ -192,6 +194,7 @@ public class PermissionsTest {
         }
         return true;
     }
+
 }
 
 

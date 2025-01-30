@@ -45,6 +45,11 @@ public class SBKService {
     }
 
     public List<TreeNode> buildTreeStructure() {
+        allSbks = sbkRepository.findAll();
+        allBewirtschafter = bewirtschafterRepository.findAll();
+        allOrganisationseinheit = organisationseinheitRepository.findAll();
+        allBehoerde = behoerdeRepository.findAll();
+        allAnwender = anwenderRepository.findAll();
 
         Map<String, TreeNode> nodeMap = createNodeMap(allSbks);
 
@@ -183,18 +188,18 @@ public class SBKService {
         }
     }
 
-    public Map<SBK,Permissions> generateBfdHACL(Anwender anwender){
+    public Map<SBK,Permissions> generateBfdHACL(Anwender anwender){                                     //O(n*n*T+o*b)
         Map<SBK,Permissions> acl = new HashMap<>();
         List<TreeNode> bList = new ArrayList<>();
         if (anwender.getBehoerde().getOrganisationseinheiten().size()>0 && anwender.getBehoerde().getOrganisationseinheiten() != null ) {
-            for (Organisationseinheit orga : anwender.getBehoerde().getOrganisationseinheiten()) {
-                for (Bewirtschafter bewirtschafter : orga.getBewirtschafter()) {
+            for (Organisationseinheit orga : anwender.getBehoerde().getOrganisationseinheiten()) {      //O(o)
+                for (Bewirtschafter bewirtschafter : orga.getBewirtschafter()) {                        //O(o*b)
                     bList.addAll(bewirtschafter.getSbks());
                 }
             }
         }
         if(anwender.getBehoerde().getBewirtschafter().size()>0 && anwender.getBehoerde().getOrganisationseinheiten() != null){
-            for (Bewirtschafter bewirtschafter : anwender.getBehoerde().getBewirtschafter()) {
+            for (Bewirtschafter bewirtschafter : anwender.getBehoerde().getBewirtschafter()) {          //O(b)
                 bList.addAll(bewirtschafter.getSbks());
             }
 
@@ -203,14 +208,14 @@ public class SBKService {
 
     }
 
-    private Map<SBK, Permissions> getSbkPermissionsMap(Map<SBK, Permissions> acl, List<TreeNode> bList) {
-        for(TreeNode node : bList){
+    private Map<SBK, Permissions> getSbkPermissionsMap(Map<SBK, Permissions> acl, List<TreeNode> bList) {//O(n*n*T)
+        for(TreeNode node : bList){                                                                     //O(n)
             acl.put(node.getData(),Permissions.B);
             if(node.getChildren() != null ) {
-                downTree(node.getChildren(), acl, bList);
+                downTree(node.getChildren(), acl, bList);                                               //O(T*n)
             }
             if(node.getParent() != null) {
-                upTree(node.getParent(),acl, bList);
+                upTree(node.getParent(),acl, bList);                                                    //O(T*n)
             }
         }
         return acl;
@@ -218,7 +223,7 @@ public class SBKService {
 
     public void downTree(List<TreeNode> nodes, Map<SBK,Permissions> acl, List <TreeNode> bList){
         for(TreeNode node : nodes){
-            if(!bList.contains(node)) { //check if parent is in the List of the Buchungs SBKs, as acl entries were overwritten. // STILL PROBLEMATIC
+            if(!bList.contains(node)) { //check if parent is in the List of the Buchungs SBKs, as acl entries were overwritten.
                 acl.put(node.getData(), Permissions.L);
             }
             if(node.getChildren() != null){

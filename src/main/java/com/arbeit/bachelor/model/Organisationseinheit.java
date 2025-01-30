@@ -13,7 +13,6 @@ public class Organisationseinheit {
     @JoinColumn(name = "behoerde")
     private Behoerde behoerde;
 
-    // Getters and Setters
     public String getName() {
         return name;
     }
